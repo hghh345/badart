@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Tahoma','Arial',sans-serif;font-size:11px;min-height:100vh;overflow-x:hidden;cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M4 2L4 24L10 18L14 28L17 27L13 17L20 17Z' fill='%23ff99cc' stroke='%23cc44aa' stroke-width='1.5'/%3E%3C/svg%3E"),auto;}
+
+.floaters{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.floater{position:absolute;font-size:22px;animation:float-around ease-in-out infinite;opacity:0.55;}
+@keyframes float-around{0%,100%{transform:translateY(0px) rotate(-4deg);}50%{transform:translateY(-14px) rotate(4deg);}}
+
+.sparkle{position:fixed;pointer-events:none;z-index:9999;font-size:16px;animation:sparkle-fall 0.9s forwards;}
+@keyframes sparkle-fall{0%{opacity:1;transform:translateY(0) scale(1) rotate(0deg);}100%{opacity:0;transform:translateY(40px) scale(0.3) rotate(180deg);}}
+
+.marquee-bar{background:linear-gradient(90deg,#ff99cc,#ffcc00,#99ffcc,#99ccff,#ff99cc);background-size:200% 100%;animation:rainbow-shift 3s linear infinite;padding:4px 0;overflow:hidden;font-family:'VT323',monospace;font-size:14px;color:#440066;white-space:nowrap;position:relative;z-index:10;}
+.marquee-inner{display:inline-block;animation:marquee 22s linear infinite;}
+@keyframes marquee{from{transform:translateX(100vw);}to{transform:translateX(-100%);}}
+@keyframes rainbow-shift{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+
+/* PAGE 1 */
+#page1{width:100%;min-height:100vh;background:linear-gradient(135deg,#ffd6f0 0%,#d4f0ff 25%,#fffacd 50%,#e8d4ff 75%,#ffd6f0 100%);display:flex;flex-direction:column;align-items:center;padding:10px 10px 20px;position:relative;}
+
+.intro-box{background:white;border:3px solid #ff99cc;padding:12px 18px;font-size:12px;text-align:center;margin:8px 0;position:relative;z-index:5;box-shadow:3px 3px 0 #ff99cc;max-width:680px;width:100%;}
+.intro-title{font-family:'VT323',monospace;font-size:30px;color:#cc0088;letter-spacing:2px;line-height:1.1;text-shadow:2px 2px 0 #ffccee;}
+.intro-sub{font-family:'VT323',monospace;font-size:15px;color:#880044;margin-top:4px;line-height:1.4;}
+.intro-body{font-size:11px;color:#550033;margin-top:8px;line-height:1.7;max-width:500px;margin-left:auto;margin-right:auto;}
+
+.prompts-section{max-width:680px;width:100%;position:relative;z-index:5;margin:10px 0;}
+.prompts-label{font-family:'VT323',monospace;font-size:18px;color:#880044;text-align:center;margin-bottom:6px;letter-spacing:1px;}
+.prompts-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.prompt-card{background:white;border:2px solid #ffaadd;padding:9px 12px;font-size:11px;color:#440066;line-height:1.5;position:relative;overflow:hidden;}
+.prompt-card::before{content:'?';position:absolute;right:6px;bottom:-4px;font-family:'VT323',monospace;font-size:48px;color:#ffeeee;line-height:1;}
+.prompt-num{font-family:'VT323',monospace;font-size:16px;color:#cc0088;display:block;margin-bottom:2px;}
+
+.window{background:#d4d0c8;border:2px solid #ffffff;border-right-color:#808080;border-bottom-color:#808080;box-shadow:3px 3px 0 #000;width:100%;max-width:680px;position:relative;z-index:5;margin-top:10px;}
+.titlebar{background:linear-gradient(to right,#cc44aa,#ff99dd,#ffaa00);color:white;font-weight:bold;padding:3px 6px;display:flex;align-items:center;justify-content:space-between;font-size:11px;text-shadow:1px 1px 0 rgba(0,0,0,0.4);user-select:none;}
+.titlebar-btns{display:flex;gap:2px;}
+.win-btn{width:16px;height:14px;background:#d4d0c8;border:1px solid #fff;border-right-color:#808080;border-bottom-color:#808080;font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#000;font-weight:bold;}
+.menubar{background:#d4d0c8;padding:2px 4px;display:flex;border-bottom:1px solid #808080;}
+.menu-item{padding:2px 6px;font-size:11px;cursor:pointer;}
+.menu-item:hover{background:#cc44aa;color:white;}
+.paint-area{display:flex;background:#d4d0c8;}
+.toolbar{width:50px;background:#d4d0c8;border-right:2px solid #808080;padding:4px 2px;display:flex;flex-direction:column;gap:2px;align-items:center;}
+.tool-btn{width:22px;height:22px;background:#d4d0c8;border:1px solid #808080;border-top-color:#fff;border-left-color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;}
+.tool-btn.active{border-top-color:#808080;border-left-color:#808080;border-right-color:#fff;border-bottom-color:#fff;background:#c0bcb4;}
+.tool-btn:hover{background:#e8e0f0;}
+.canvas-area{flex:1;background:#808080;padding:4px;overflow:hidden;}
+canvas#paintCanvas{background:white;cursor:crosshair;display:block;border:2px solid #808080;border-top-color:#fff;border-left-color:#fff;}
+.color-palette{background:#d4d0c8;border-top:2px solid #808080;padding:4px 6px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
+.current-colors{width:28px;height:28px;position:relative;margin-right:6px;}
+.color-preview-bg{width:20px;height:20px;background:white;border:2px solid #fff;border-right-color:#808080;border-bottom-color:#808080;position:absolute;bottom:0;right:0;}
+.color-preview-fg{width:20px;height:20px;background:black;border:2px solid #fff;border-right-color:#808080;border-bottom-color:#808080;position:absolute;top:0;left:0;z-index:2;}
+.color-swatch{width:16px;height:16px;border:1px solid #808080;cursor:pointer;flex-shrink:0;}
+.color-swatch:hover{border-color:#cc44aa;transform:scale(1.3);}
+.statusbar{background:#d4d0c8;border-top:2px solid #808080;padding:2px 6px;display:flex;gap:10px;font-size:11px;}
+.status-panel{border:1px solid #808080;border-top-color:#fff;border-left-color:#fff;padding:0 4px;font-size:11px;flex:1;}
+.size-btns{display:flex;flex-direction:column;gap:3px;margin-top:8px;}
+.size-btn{width:30px;height:16px;background:#d4d0c8;border:1px solid #fff;border-right-color:#808080;border-bottom-color:#808080;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.size-dot{background:black;border-radius:50%;}
+.size-btn.active{border-color:#808080;border-right-color:#fff;border-bottom-color:#fff;}
+.enter-btn{background:linear-gradient(to bottom,#ff99cc,#ff44aa);border:2px solid #ffffff;border-right-color:#aa0066;border-bottom-color:#aa0066;padding:7px 22px;font-family:'VT323',monospace;font-size:18px;cursor:pointer;color:white;text-shadow:1px 1px 0 rgba(0,0,0,0.4);letter-spacing:1px;}
+.enter-btn:hover{background:linear-gradient(to bottom,#ffaadd,#ff66bb);}
+.enter-btn.gray{background:linear-gradient(to bottom,#d4d0c8,#b0aca4);border-right-color:#808080;border-bottom-color:#808080;color:#444;text-shadow:none;}
+.enter-btn:active{border-color:#808080;border-right-color:#fff;border-bottom-color:#fff;}
+.paint-instruction{font-family:'VT323',monospace;font-size:15px;color:#880044;text-align:center;margin:6px 0 2px;position:relative;z-index:5;}
+
+/* PAGE 2 */
+#page2{display:none;width:100%;min-height:100vh;position:relative;overflow:hidden;font-family:Tahoma,Arial,sans-serif;}
+.xp-bg{position:absolute;inset:0;background:radial-gradient(ellipse 120% 60% at 50% 100%,#3a7d44 0%,#5db84a 30%,#7dc856 50%,#a8e06a 65%,transparent 70%),radial-gradient(ellipse 160% 55% at 20% 105%,#2d6e35 0%,#4a9940 40%,transparent 60%),radial-gradient(ellipse 100% 40% at 80% 110%,#2a6830 0%,#458c3a 40%,transparent 60%),linear-gradient(to bottom,#4ac8f0 0%,#6cd4f8 20%,#a8e4ff 35%,#c5eeff 42%,#d6f4ff 47%,#b8e855 52%,#7dc856 58%,#5db84a 70%,#3a7d44 100%);z-index:0;}
+.xp-clouds{position:absolute;inset:0;z-index:1;pointer-events:none;}
+.deco-stickers{position:absolute;inset:0;z-index:2;pointer-events:none;}
+.sticker{position:absolute;font-size:26px;animation:stickerFloat ease-in-out infinite;filter:drop-shadow(1px 2px 0px rgba(0,0,0,0.15));}
+@keyframes stickerFloat{0%,100%{transform:translateY(0) rotate(-4deg);}50%{transform:translateY(-10px) rotate(4deg);}}
+
+.party-window{position:relative;z-index:10;max-width:520px;margin:18px auto 70px;background:white;border:3px solid #ffffff;border-right-color:#808080;border-bottom-color:#808080;box-shadow:4px 4px 0 rgba(0,0,0,0.5);}
+.party-titlebar{background:linear-gradient(to right,#cc44aa,#ff99dd,#ffcc00);color:white;font-weight:bold;padding:4px 6px;display:flex;align-items:center;justify-content:space-between;font-size:11px;text-shadow:1px 1px 0 rgba(0,0,0,0.3);}
+.party-content{padding:14px 18px 18px;background:#fff9fe;}
+.party-title{font-family:'VT323',monospace;font-size:34px;color:#cc0088;text-align:center;letter-spacing:2px;line-height:1.1;margin-bottom:2px;text-shadow:3px 3px 0 #ffccee,-1px -1px 0 #ff44aa;}
+.party-subtitle{text-align:center;font-family:'VT323',monospace;font-size:15px;color:#aa44cc;margin-bottom:10px;letter-spacing:1px;}
+.rainbow-divider{height:4px;background:linear-gradient(90deg,#ff0099,#ff6600,#ffcc00,#33cc33,#0099ff,#cc00ff);margin:8px 0;border:none;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;}
+.info-card{background:linear-gradient(135deg,#fff0fa,#f0f4ff);border:2px solid #ffaadd;padding:8px 10px;font-size:11px;line-height:1.6;}
+.info-card-label{font-family:'VT323',monospace;font-size:15px;color:#cc0088;display:block;margin-bottom:2px;}
+.info-card-full{grid-column:span 2;}
+.for-you-box{background:linear-gradient(135deg,#fff8e8,#fff0fa);border:2px solid #ffcc88;padding:10px 12px;font-size:11px;margin-bottom:10px;line-height:1.7;color:#550033;}
+.for-you-title{font-family:'VT323',monospace;font-size:17px;color:#cc6600;margin-bottom:5px;}
+.prev-events-box{background:linear-gradient(135deg,#f0f8ff,#fff0ff);border:2px dashed #aa66cc;padding:10px 12px;font-size:11px;margin-bottom:10px;}
+.prev-title{font-family:'VT323',monospace;font-size:17px;color:#880099;margin-bottom:5px;}
+.prev-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+.prev-tag{background:#f0e8ff;border:1px solid #cc88ff;color:#660099;padding:3px 8px;font-size:10px;font-family:'VT323',monospace;font-size:13px;}
+.rules-box{background:linear-gradient(135deg,#f0f8ff,#fff0ff);border:2px dashed #aa66cc;padding:10px 12px;font-size:11px;margin-bottom:10px;}
+.rules-title{font-family:'VT323',monospace;font-size:17px;color:#880099;margin-bottom:5px;display:flex;align-items:center;gap:6px;}
+.rules-list{list-style:none;padding:0;}
+.rules-list li{padding:2px 0;font-size:11px;color:#440066;}
+.rules-list li::before{content:'✿ ';color:#ff44aa;}
+.drawing-badge{background:#fff0fa;border:2px solid #ffaadd;padding:8px;display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.badge-canvas{width:70px;height:50px;border:2px solid #ff99cc;background:white;flex-shrink:0;}
+.badge-text{font-size:11px;line-height:1.7;color:#660044;}
+.rsvp-btn{display:block;width:100%;background:linear-gradient(to right,#ff44aa,#cc00ff);color:white;text-align:center;padding:9px;font-family:'VT323',monospace;font-size:20px;letter-spacing:2px;cursor:pointer;border:2px solid #fff;border-right-color:#880044;border-bottom-color:#880044;text-shadow:1px 1px 0 rgba(0,0,0,0.3);}
+.rsvp-btn:hover{background:linear-gradient(to right,#ff66bb,#dd22ff);}
+.funfunfun-credit{text-align:center;font-family:'VT323',monospace;font-size:13px;color:#cc44aa;margin-top:7px;letter-spacing:1px;}
+.blink{animation:blink 0.8s step-end infinite;}
+@keyframes blink{50%{opacity:0;}}
+.pixel-hearts{text-align:center;font-size:14px;margin:5px 0;letter-spacing:4px;animation:heartbeat 1.2s ease-in-out infinite;}
+@keyframes heartbeat{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
+.xp-taskbar{position:absolute;bottom:0;left:0;right:0;height:30px;background:linear-gradient(to bottom,#2f5fa9,#1e4898 50%,#1d47a0 51%,#2960ad 100%);border-top:1px solid #5a8de3;z-index:100;display:flex;align-items:center;padding:0 4px;gap:4px;}
+.start-btn{background:linear-gradient(to bottom,#5bad3e,#3d8f29 50%,#3d8f29 51%,#5bad3e 100%);border:1px solid #2a7318;border-radius:0 10px 10px 0;color:white;font-weight:bold;font-size:12px;padding:3px 14px 3px 8px;cursor:pointer;height:24px;display:flex;align-items:center;gap:4px;font-style:italic;}
+.taskbar-clock{margin-left:auto;background:rgba(0,0,0,0.2);color:white;font-size:11px;padding:2px 8px;border:1px solid rgba(255,255,255,0.2);font-family:Tahoma;}
+.spinning{display:inline-block;animation:spin 2s linear infinite;}
+@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<div class="floaters" id="floaters"></div>
+
+<!-- PAGE 1 -->
+<div id="page1">
+  <div class="marquee-bar">
+    <span class="marquee-inner">🍑 BAD ART & BELLINIS IN THE PARK — May 2nd — a funfunfun.event 🍑 no talent required 🍑 bellinis provided 🍑 BAD ART & BELLINIS IN THE PARK — May 2nd — a funfunfun.event 🍑 no talent required 🍑 bellinis provided 🍑</span>
+  </div>
+
+  <div class="intro-box" style="margin-top:10px;">
+    <div class="intro-title">🍑 BAD ART & BELLINIS 🍹</div>
+    <div class="intro-sub">in the park · Friday May 2nd · 16h–18h</div>
+    <hr class="rainbow-divider" style="margin:8px 0;">
+    <div class="intro-body">
+      for the person in a creative rut who wants to make fun, silly things in a low-pressure environment.<br>
+      for the person who wants to do something <em>unserious</em> on a friday and meet dope people.<br>
+      <strong style="color:#cc0088;">come ready to experiment, play, and make something genuinely bad. 🎨</strong>
+    </div>
+  </div>
+
+  <div class="prompts-section">
+    <div class="prompts-label">✿ today's question prompts (a little teaser) ✿</div>
+    <div class="prompts-grid">
+      <div class="prompt-card">
+        <span class="prompt-num">prompt 01</span>
+        draw the last thing that made you laugh out loud — no context needed
+      </div>
+      <div class="prompt-card">
+        <span class="prompt-num">prompt 02</span>
+        illustrate your current mood using only shapes and colours
+      </div>
+      <div class="prompt-card">
+        <span class="prompt-num">prompt 03</span>
+        portrait of a stranger you saw this week — from memory, no pressure
+      </div>
+      <div class="prompt-card">
+        <span class="prompt-num">prompt 04</span>
+        what does your inner critic look like? draw it. make it weird.
+      </div>
+    </div>
+  </div>
+
+  <div class="paint-instruction">✿ draw something bad in ms paint to enter the party ✿</div>
+  <div style="font-family:Tahoma;font-size:10px;color:#880044;text-align:center;margin-bottom:6px;">a dot counts. a squiggle counts. we genuinely don't mind.</div>
+
+  <div class="window">
+    <div class="titlebar">
+      <div style="display:flex;align-items:center;gap:4px;">🎨 untitled - Paint (bad art edition)</div>
+      <div class="titlebar-btns">
+        <div class="win-btn">_</div><div class="win-btn">□</div><div class="win-btn" style="color:#c00;">✕</div>
+      </div>
+    </div>
+    <div class="menubar">
+      <div class="menu-item">File</div><div class="menu-item">Edit</div><div class="menu-item">View</div><div class="menu-item">Image</div><div class="menu-item">Colors</div><div class="menu-item">Help</div>
+    </div>
+    <div class="paint-area">
+      <div class="toolbar">
+        <div style="display:flex;flex-wrap:wrap;width:46px;gap:1px;">
+          <div class="tool-btn active" id="tool-pencil" onclick="setTool('pencil')" title="Pencil">✏️</div>
+          <div class="tool-btn" id="tool-brush" onclick="setTool('brush')" title="Brush">🖌️</div>
+          <div class="tool-btn" id="tool-eraser" onclick="setTool('eraser')" title="Eraser">⬜</div>
+          <div class="tool-btn" id="tool-fill" onclick="setTool('fill')" title="Fill">🪣</div>
+          <div class="tool-btn" id="tool-rect" onclick="setTool('rect')" title="Rectangle">▭</div>
+          <div class="tool-btn" id="tool-line" onclick="setTool('line')" title="Line">╱</div>
+          <div class="tool-btn" id="tool-text" onclick="setTool('text')" title="Text">A</div>
+          <div class="tool-btn" id="tool-circle" onclick="setTool('circle')" title="Ellipse">◯</div>
+        </div>
+        <div class="size-btns">
+          <div class="size-btn active" id="sz1" onclick="setSize(2,this)"><div class="size-dot" style="width:3px;height:3px;"></div></div>
+          <div class="size-btn" id="sz2" onclick="setSize(5,this)"><div class="size-dot" style="width:5px;height:5px;"></div></div>
+          <div class="size-btn" id="sz3" onclick="setSize(10,this)"><div class="size-dot" style="width:8px;height:8px;"></div></div>
+        </div>
+      </div>
+      <div class="canvas-area">
+        <canvas id="paintCanvas" width="580" height="280" style="width:100%;height:280px;"></canvas>
+      </div>
+    </div>
+    <div class="color-palette">
+      <div class="current-colors">
+        <div class="color-preview-bg" id="bgColor"></div>
+        <div class="color-preview-fg" id="fgColor"></div>
+      </div>
+      <div id="swatches" style="display:flex;flex-wrap:wrap;gap:1px;max-width:560px;"></div>
+    </div>
+    <div class="statusbar">
+      <div class="status-panel" id="coords">For Help, click Help Topics on the Help menu.</div>
+      <div class="status-panel" style="flex:0 0 100px;" id="dims">580 x 280</div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:10px;align-items:center;justify-content:center;margin-top:10px;">
+    <button class="enter-btn gray" onclick="clearCanvas()">🗑 New</button>
+    <button class="enter-btn" onclick="tryEnter()">Enter the Party ✿</button>
+  </div>
+  <div style="font-family:'VT323',monospace;font-size:13px;color:#aa44cc;text-align:center;margin-top:8px;letter-spacing:1px;">a funfunfun.event ✿ previously: jingle & mingle · sketch & scribble</div>
+</div>
+
+<!-- PAGE 2 -->
+<div id="page2">
+  <div class="xp-bg"></div>
+  <div class="xp-clouds" id="clouds"></div>
+  <div class="deco-stickers" id="stickers"></div>
+
+  <div class="party-window">
+    <div class="party-titlebar">
+      <div style="display:flex;align-items:center;gap:5px;">🍑 bad art & bellinis in the park — party info.exe</div>
+      <div class="titlebar-btns">
+        <div class="win-btn">_</div><div class="win-btn">□</div><div class="win-btn" style="color:#c00;">✕</div>
+      </div>
+    </div>
+    <div class="party-content">
+      <div class="pixel-hearts">🍑 🍹 🍑 🍹 🍑</div>
+      <div class="party-title">BAD ART<br>& BELLINIS 🍹</div>
+      <div class="party-subtitle">✿ in the park · friday may 2nd · 16h–18h ✿</div>
+      <hr class="rainbow-divider">
+
+      <div class="drawing-badge">
+        <canvas class="badge-canvas" id="badgeCanvas"></canvas>
+        <div class="badge-text">
+          <strong style="color:#cc0088;">🏆 your admission artwork</strong><br>
+          certified authentically terrible<br>
+          <span style="color:#009900;">✓ accepted. welcome in bestie.</span>
+        </div>
+      </div>
+
+      <div class="for-you-box">
+        <div class="for-you-title">🍑 this event is for you if...</div>
+        you're in a creative rut and want a chance to make fun, silly things in a low-pressure environment.<br>
+        you want to do something completely unserious on a friday and meet dope people.<br>
+        <strong style="color:#cc6600;">come ready to experiment, play, and respond to prompts — no talent necessary.</strong>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-card">
+          <span class="info-card-label">📅 date</span>
+          Friday, May 2nd 2026
+        </div>
+        <div class="info-card">
+          <span class="info-card-label">🕓 time</span>
+          16h – 18h
+        </div>
+        <div class="info-card info-card-full">
+          <span class="info-card-label">📍 location</span>
+          [PARK NAME — fill this in!]
+        </div>
+        <div class="info-card">
+          <span class="info-card-label">🍹 drinks</span>
+          bellinis included!<br>we've got you covered
+        </div>
+        <div class="info-card">
+          <span class="info-card-label">🧺 bring</span>
+          a blanket if you want one!
+        </div>
+        <div class="info-card info-card-full">
+          <span class="info-card-label">🎨 art supplies</span>
+          provided on the day — just show up ready to respond to prompts and play
+        </div>
+      </div>
+
+      <div class="rules-box">
+        <div class="rules-title">✿ official rules of bad art club</div>
+        <ul class="rules-list">
+          <li>the worse the art, the better</li>
+          <li>perfectionism is grounds for expulsion</li>
+          <li>bellinis before brushstrokes: fully encouraged</li>
+          <li>unsolicited critique is strictly forbidden</li>
+          <li>prizes for most chaotic piece</li>
+          <li>good vibes mandatory, talent optional</li>
+        </ul>
+      </div>
+
+      <div class="prev-events-box">
+        <div class="prev-title">✿ part of funfunfun.event</div>
+        <div style="font-size:11px;color:#440066;line-height:1.6;">we've been doing this a while — previous events include:</div>
+        <div class="prev-tags">
+          <div class="prev-tag">🎶 jingle & mingle</div>
+          <div class="prev-tag">✏️ sketch & scribble</div>
+          <div class="prev-tag">🍑 bad art & bellinis ← you're here</div>
+        </div>
+      </div>
+
+      <div class="rsvp-btn" onclick="alert('add your RSVP link or contact info here! 🎨')">
+        <span class="spinning">✉</span> RSVP HERE — [YOUR CONTACT] <span class="spinning">✉</span>
+      </div>
+      <div class="funfunfun-credit"><span class="blink">★</span> a funfunfun.event <span class="blink">★</span></div>
+    </div>
+  </div>
+
+  <div class="xp-taskbar">
+    <div class="start-btn" onclick="goBack()">⊞ start</div>
+    <div style="background:rgba(0,0,0,0.3);color:white;font-size:11px;padding:3px 8px;border:1px solid rgba(255,255,255,0.2);cursor:pointer;" onclick="goBack()">🎨 Paint - bad art</div>
+    <div class="taskbar-clock" id="clock">12:00 PM</div>
+  </div>
+</div>
+
+<script>
+const canvas=document.getElementById('paintCanvas');
+const ctx=canvas.getContext('2d');
+let drawing=false,tool='pencil',color='#000000',brushSize=2,startX,startY,snapshot,hasDrawn=false;
+canvas.width=580;canvas.height=280;
+ctx.fillStyle='white';ctx.fillRect(0,0,canvas.width,canvas.height);
+
+const paletteColors=['#000000','#808080','#800000','#808000','#008000','#008080','#000080','#800080','#c0c0c0','#ffffff','#ff0000','#ffff00','#00ff00','#00ffff','#0000ff','#ff00ff','#ff99cc','#ff44aa','#cc00ff','#aa00ff','#ff6600','#ffaa00','#ffcc00','#00cc88','#ff8080','#ffaaaa','#ffcccc','#ccffcc','#ccccff','#ffccff','#aaffee','#ff99aa'];
+const sw=document.getElementById('swatches');
+paletteColors.forEach(c=>{const s=document.createElement('div');s.className='color-swatch';s.style.background=c;s.onclick=()=>{color=c;document.getElementById('fgColor').style.background=c;};sw.appendChild(s);});
+
+function setTool(t){tool=t;document.querySelectorAll('.tool-btn').forEach(b=>b.classList.remove('active'));const el=document.getElementById('tool-'+t);if(el)el.classList.add('active');}
+function setSize(s,btn){brushSize=s;document.querySelectorAll('.size-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function getPos(e){const rect=canvas.getBoundingClientRect();const scaleX=canvas.width/rect.width,scaleY=canvas.height/rect.height;const cx=e.touches?e.touches[0].clientX:e.clientX,cy=e.touches?e.touches[0].clientY:e.clientY;return{x:(cx-rect.left)*scaleX,y:(cy-rect.top)*scaleY};}
+function hexToRgb(hex){const r=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);return r?{r:parseInt(r[1],16),g:parseInt(r[2],16),b:parseInt(r[3],16)}:null;}
+function floodFill(x,y,fc){const imgData=ctx.getImageData(0,0,canvas.width,canvas.height);const data=imgData.data;const idx=(Math.round(y)*canvas.width+Math.round(x))*4;const tR=data[idx],tG=data[idx+1],tB=data[idx+2];const f=hexToRgb(fc);if(!f||(tR===f.r&&tG===f.g&&tB===f.b))return;const stack=[[Math.round(x),Math.round(y)]];const visited=new Set();while(stack.length){const[cx,cy]=stack.pop();const key=cx+','+cy;if(visited.has(key)||cx<0||cx>=canvas.width||cy<0||cy>=canvas.height)continue;const i=(cy*canvas.width+cx)*4;if(Math.abs(data[i]-tR)>30||Math.abs(data[i+1]-tG)>30||Math.abs(data[i+2]-tB)>30)continue;visited.add(key);data[i]=f.r;data[i+1]=f.g;data[i+2]=f.b;data[i+3]=255;stack.push([cx+1,cy],[cx-1,cy],[cx,cy+1],[cx,cy-1]);}ctx.putImageData(imgData,0,0);}
+
+canvas.addEventListener('mousedown',startDraw);canvas.addEventListener('mousemove',draw);canvas.addEventListener('mouseup',endDraw);canvas.addEventListener('mouseleave',endDraw);
+canvas.addEventListener('touchstart',e=>{e.preventDefault();startDraw(e);},{passive:false});canvas.addEventListener('touchmove',e=>{e.preventDefault();draw(e);},{passive:false});canvas.addEventListener('touchend',e=>{e.preventDefault();endDraw(e);},{passive:false});
+canvas.addEventListener('mousemove',e=>{const p=getPos(e);document.getElementById('coords').textContent=`${Math.round(p.x)}, ${Math.round(p.y)}`;});
+
+function startDraw(e){const p=getPos(e);startX=p.x;startY=p.y;drawing=true;hasDrawn=true;
+  if(tool==='fill'){floodFill(p.x,p.y,color);drawing=false;return;}
+  if(tool==='text'){const text=prompt('Type something (the worse the better):');if(text){ctx.font=`${brushSize*8+10}px Tahoma`;ctx.fillStyle=color;ctx.fillText(text,p.x,p.y);}drawing=false;return;}
+  snapshot=ctx.getImageData(0,0,canvas.width,canvas.height);
+  if(['pencil','brush','eraser'].includes(tool)){ctx.beginPath();ctx.moveTo(p.x,p.y);}}
+
+function draw(e){if(!drawing)return;const p=getPos(e);
+  if(tool==='pencil'){ctx.lineTo(p.x,p.y);ctx.strokeStyle=color;ctx.lineWidth=brushSize;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();}
+  else if(tool==='brush'){ctx.lineTo(p.x,p.y);ctx.strokeStyle=color;ctx.lineWidth=brushSize*3;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();}
+  else if(tool==='eraser'){ctx.lineTo(p.x,p.y);ctx.strokeStyle='white';ctx.lineWidth=brushSize*4;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();}
+  else if(tool==='rect'){ctx.putImageData(snapshot,0,0);ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=brushSize;ctx.strokeRect(startX,startY,p.x-startX,p.y-startY);}
+  else if(tool==='line'){ctx.putImageData(snapshot,0,0);ctx.beginPath();ctx.moveTo(startX,startY);ctx.lineTo(p.x,p.y);ctx.strokeStyle=color;ctx.lineWidth=brushSize;ctx.stroke();}
+  else if(tool==='circle'){ctx.putImageData(snapshot,0,0);ctx.beginPath();const rx=(p.x-startX)/2,ry=(p.y-startY)/2;ctx.ellipse(startX+rx,startY+ry,Math.abs(rx),Math.abs(ry),0,0,Math.PI*2);ctx.strokeStyle=color;ctx.lineWidth=brushSize;ctx.stroke();}}
+
+function endDraw(){drawing=false;}
+function clearCanvas(){ctx.fillStyle='white';ctx.fillRect(0,0,canvas.width,canvas.height);hasDrawn=false;}
+
+function tryEnter(){
+  if(!hasDrawn){alert('bestie you have to draw SOMETHING 🎨 a dot counts. we promise.');return;}
+  const dataURL=canvas.toDataURL();
+  document.getElementById('page1').style.display='none';
+  document.getElementById('page2').style.display='block';
+  const badge=document.getElementById('badgeCanvas');const bctx=badge.getContext('2d');badge.width=140;badge.height=100;
+  const img=new Image();img.onload=()=>bctx.drawImage(img,0,0,140,100);img.src=dataURL;
+  generateClouds();generateStickers();updateClock();setInterval(updateClock,1000);
+}
+
+function goBack(){document.getElementById('page2').style.display='none';document.getElementById('page1').style.display='flex';}
+
+function generateClouds(){const c=document.getElementById('clouds');c.innerHTML='';[{top:4,left:2,w:160,h:50},{top:2,left:20,w:200,h:60},{top:8,left:50,w:140,h:45},{top:5,left:65,w:170,h:52},{top:10,left:80,w:120,h:40}].forEach(d=>{const el=document.createElement('div');el.style.cssText=`position:absolute;top:${d.top}%;left:${d.left}%;width:${d.w}px;height:${d.h}px;background:white;border-radius:${d.h}px;opacity:0.93;`;const b1=document.createElement('div');b1.style.cssText=`position:absolute;width:${d.w*.6}px;height:${d.h*1.2}px;background:white;border-radius:50%;top:-${d.h*.3}px;left:${d.w*.15}px;`;const b2=document.createElement('div');b2.style.cssText=`position:absolute;width:${d.w*.4}px;height:${d.h*.9}px;background:white;border-radius:50%;top:-${d.h*.15}px;left:${d.w*.45}px;`;el.appendChild(b1);el.appendChild(b2);c.appendChild(el);});}
+
+function generateStickers(){const s=document.getElementById('stickers');s.innerHTML='';
+  const items=['🍑','🍹','🍑','🍹','🍑','🍹','🍑','🍹'];
+  const positions=[{top:'55%',left:'1%'},{top:'67%',left:'88%'},{top:'74%',left:'4%'},{top:'60%',left:'91%'},{top:'82%',left:'8%'},{top:'57%',left:'83%'},{top:'78%',left:'87%'},{top:'86%',left:'2%'}];
+  positions.forEach((pos,i)=>{const el=document.createElement('div');el.className='sticker';el.style.top=pos.top;el.style.left=pos.left;el.style.animationDuration=`${2.2+i*0.35}s`;el.style.animationDelay=`${i*0.25}s`;el.textContent=items[i];s.appendChild(el);});}
+
+function updateClock(){const now=new Date();let h=now.getHours(),m=now.getMinutes().toString().padStart(2,'0');const ap=h>=12?'PM':'AM';h=h%12||12;document.getElementById('clock').textContent=`${h}:${m} ${ap}`;}
+
+document.addEventListener('click',e=>{
+  if(e.target.closest('#page1')){
+    for(let i=0;i<3;i++){const sp=document.createElement('div');sp.className='sparkle';sp.style.left=(e.clientX+Math.random()*30-15)+'px';sp.style.top=(e.clientY+Math.random()*30-15)+'px';sp.textContent=['✨','🍑','💫','🌸','✿'][Math.floor(Math.random()*5)];document.body.appendChild(sp);setTimeout(()=>sp.remove(),1000);}
+  }
+});
+
+const floaterEl=document.getElementById('floaters');
+['🍑','🍹','🍑','🍹','🍑','🍹','🍑','🍹'].forEach((emoji,i)=>{
+  const f=document.createElement('div');f.className='floater';
+  f.style.left=`${5+i*12}%`;f.style.top=`${8+Math.random()*12}%`;
+  f.style.animationDuration=`${2.8+i*0.4}s`;f.style.animationDelay=`${i*0.35}s`;
+  f.textContent=emoji;floaterEl.appendChild(f);
+});
+</script>
+</body>
+</html>
